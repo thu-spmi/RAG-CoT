@@ -196,8 +196,8 @@ class CatFidDataset(Dataset):
                 ln = ln.strip()
                 record = json.loads(ln)
                 question = record['question']
-                answer = record['answer']  # 修改为单个答案
-                facts = record['match_info'] + record['random_info']  # 将Match Info和Random Info合并为上下文
+                answer = record['answer']
+                facts = record['match_info'] + record['random_info']
                 self.random_shuffle = True
                 if self.random_shuffle:
                     random.shuffle(facts)
@@ -330,39 +330,9 @@ def evaluation(model, eval_dataloader):
     for step, batch in enumerate(tqdm(eval_dataloader)):
         with torch.no_grad():
             batch = to_device(batch, model.device)
-            #print(batch)
-            # 检查输入数据
-            for key, value in batch.items():
-                if torch.isnan(value).any() or torch.isinf(value).any():
-                    print(f"Invalid value detected in batch at step {step}, key: {key}")
-                    return float('nan')
-            
-            # 检查模型参数
-            for name, param in model.named_parameters():
-                if param.is_meta:
-                    continue  # 跳过 Meta 张量
-                if torch.isnan(param).any() or torch.isinf(param).any():
-                    raise ValueError(f"Invalid parameter detected in layer: {name}")       
-
-            # 检查 batch 数据是否包含零值或负数值
-            #check_zero_and_negative(batch)  
-
             outputs = model(**batch)
         loss = outputs.loss
-        
-        # 检查并打印损失值是否为 nan
-        if torch.isnan(loss):
-            print(f"NaN loss detected at step {step}")
-            #print(f"Outputs: {outputs}")
-
         total_loss += loss.item()
-
-        # 打印梯度信息（如果需要）
-        for name, param in model.named_parameters():
-            if param.grad is not None:
-                if torch.isnan(param.grad).any():
-                    print(f"NaN gradient detected in parameter: {name}")
-
     total_loss /= (step + 1)
     model.train()
     return total_loss
