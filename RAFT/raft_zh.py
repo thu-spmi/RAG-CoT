@@ -186,15 +186,8 @@ if __name__ == "__main__":
 
     if args.input_type == "dureader":
         chunks, qs, answers = read_dataset(args.datapath)
-        print("load dataset done")
-        cnt = 0
         for chunk, q, answer in zip(chunks, qs, answers):
-            add_chunk_to_dataset_dureader(chunks, chunk, q, answer, args.doctype, NUM_DISTRACT_DOCS)
-            cnt = cnt + 1
-            print(cnt)
-            if cnt == 6000:
-                break
-        print("add chunk to dataset done")    
+            add_chunk_to_dataset_dureader(chunks, chunk, q, answer, args.doctype, NUM_DISTRACT_DOCS) 
 
 
     #print(ds)

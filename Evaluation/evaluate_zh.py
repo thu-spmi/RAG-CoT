@@ -7,8 +7,6 @@ from collections import Counter
 import pickle
 from collections import defaultdict
 
-a=0
-
 def _tokenize_chinese_chars(text):
     """
     :param text: input text, unicode string
@@ -107,15 +105,6 @@ def f1_score(prediction, ground_truth):
 def exact_match_score(prediction, ground_truth):
     return (normalize_answer(prediction) == normalize_answer(ground_truth))
 
-def extract_answer(text):
-    marker = "<答案>:"
-    start_index = text.find(marker)
-    if start_index != -1:
-        global a
-        a = a + 1
-        return text[start_index + len(marker):].strip()
-    return text.rsplit(':', 1)[-1]
-
 def update_answer(metrics, prediction, gold):
     em = exact_match_score(prediction, gold)
     f1, prec, recall = f1_score(prediction, gold)
@@ -143,8 +132,7 @@ def eval(prediction_file, gold_file):
         # 将 id 加入列表
         prediction_ids.append(id)
         # 将 id 和对应的 answer 存入字典
-        id_to_answer[id] = extract_answer(data["prediction"])
-        # id_to_answer[id] = data["prediction"]
+        id_to_answer[id] = data["prediction"]
 
     metrics = {'em': 0, 'f1': 0, 'prec': 0, 'recall': 0}
     for dp in gold:
@@ -156,7 +144,7 @@ def eval(prediction_file, gold_file):
     
     N = len(prediction)
     for k in metrics.keys():
-        metrics[k] /= a
+        metrics[k] /= N
 
     print(metrics)
 
