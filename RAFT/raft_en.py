@@ -293,25 +293,12 @@ if __name__ == "__main__":
 
     if args.input_type == "hotpot":
         qs, chunks, sfs, answers = read_dataset_hotpot(args.datapath)
-        print("load dataset done")
-        cnt = 0
         for chunk, q ,sf, answer in zip(chunks, qs, sfs, answers):
-            #print(sf)
-            cnt = cnt + 1
-            print(cnt)
             add_chunk_to_dataset_hotpotQA(args.answer_type, chunk, q, sf, answer, args.doctype, NUM_DISTRACT_DOCS)
-            if cnt == 5000:
-                break
-        print("add chunk to dataset done")    
     
     elif args.input_type == "pubmed":
         qs, chunks, answers = read_dataset_pubmed(args.datapath)
-        print("load dataset done")
-        cnt = 0
         for chunk, q, answer in zip(chunks, qs, answers):
-           # print(sf)
-            cnt = cnt + 1
-            print(cnt)
             add_chunk_to_dataset_pubmedQA(answer, args.answer_type, chunks, chunk, q, args.doctype, NUM_DISTRACT_DOCS)
      
     # Save as .arrow format
